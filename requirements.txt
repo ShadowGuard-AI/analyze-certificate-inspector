@@ -1,1 +1,2 @@
 pandas>=2.2.0
+pyOpenSSL>=23.0.0

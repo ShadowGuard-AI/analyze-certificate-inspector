@@ -2,6 +2,7 @@ import argparse
 import logging
 import ssl
 import socket
+import sys
 import datetime
 import pandas as pd
 import OpenSSL
@@ -32,7 +33,9 @@ def get_certificate(hostname, port=443):
         port (int): The port to connect to (default: 443).
 
     Returns:
-        ssl.SSLSocket: The SSL/TLS socket object.  Returns None on error.
+        bytes: The peer certificate in DER form, or None on error. The
+        socket is closed before returning, so bytes are all a caller
+        could safely keep anyway.
 
     Raises:
         socket.gaierror: If the hostname cannot be resolved.
@@ -69,11 +72,16 @@ def analyze_certificate(cert_bytes):
     """
     try:
         cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_ASN1, cert_bytes)
-        subject = cert.get_subject()
-        issuer = cert.get_issuer()
-        
-        subject_data = {component.decode(): subject.components()[i][1].decode() for i, component in enumerate(subject.components()[0])}
-        issuer_data = {component.decode(): issuer.components()[i][1].decode() for i, component in enumerate(issuer.components()[0])}
+
+        def name_to_dict(name):
+            # get_components() already returns (key, value) byte pairs for
+            # every field. The comprehension this replaces indexed back
+            # into components()[0] while enumerating it, so it only ever
+            # described the first field, twice, under wrong keys.
+            return {k.decode(): v.decode() for k, v in name.get_components()}
+
+        subject_data = name_to_dict(cert.get_subject())
+        issuer_data = name_to_dict(cert.get_issuer())
 
 
         not_before = datetime.datetime.strptime(cert.get_notBefore().decode(), '%Y%m%d%H%M%SZ')
@@ -108,7 +116,10 @@ def check_expiration(cert_details):
         return "Could not retrieve expiration details."
 
     not_after = cert_details['not_after']
-    now = datetime.datetime.now()
+    # Both sides are naive UTC here: pyOpenSSL hands back GMT strings,
+    # parsed above without tzinfo. Comparing against local time would
+    # shift the answer by the host's offset, so keep now in UTC too.
+    now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
     time_left = not_after - now
 
     if time_left.days < 0:
@@ -153,13 +164,13 @@ def main():
     
     if not cert_bytes:
         print("Failed to retrieve certificate.")
-        return
+        sys.exit(1)
 
     cert_details = analyze_certificate(cert_bytes)
 
     if not cert_details:
         print("Failed to analyze certificate.")
-        return
+        sys.exit(1)
 
     print("Certificate Details:")
     print(f"  Subject: {cert_details['subject']}")
