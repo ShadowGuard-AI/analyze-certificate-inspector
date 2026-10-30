@@ -1,3 +1,5 @@
+![Banner](banner.png)
+
 # analyze-certificate-inspector
 Inspects SSL/TLS certificates for expiration dates, issuer validity, and potential vulnerabilities (e.g., weak cipher suites). - Focused on Data analysis and reporting
 
