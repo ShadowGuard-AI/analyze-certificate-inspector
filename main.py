@@ -17,7 +17,7 @@ def setup_argparse():
     Returns:
         argparse.ArgumentParser: The configured argument parser.
     """
-    parser = argparse.ArgumentParser(description='Inspects SSL/TLS certificates for expiration, issuer, and vulnerabilities.')
+    parser = argparse.ArgumentParser(description='Inspects SSL/TLS certificates: shows subject, issuer, validity dates, version, and serial number, and checks expiration.')
     parser.add_argument('hostname', help='The hostname to inspect.')
     parser.add_argument('-p', '--port', type=int, default=443, help='The port to connect to (default: 443).')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging.')
