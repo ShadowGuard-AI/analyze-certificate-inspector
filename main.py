@@ -42,6 +42,12 @@ def get_certificate(hostname, port=443):
         ConnectionRefusedError: If the connection is refused.
         ssl.SSLError: If there's an SSL-related error.
     """
+    # The docstring above lists exceptions this function raises. It
+    # does not raise them: every failure below is caught and turned
+    # into None, so the caller sees one undifferentiated failure and
+    # the specific cause lives only in the log line for its branch.
+    # create_default_context also means verification is on, so a
+    # self-signed or expired cert fails here before analysis starts.
     try:
         context = ssl.create_default_context()
         with socket.create_connection((hostname, port), timeout=5) as sock:
@@ -74,6 +80,10 @@ def analyze_certificate(cert_bytes):
         cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_ASN1, cert_bytes)
 
         def name_to_dict(name):
+            # A name with the same field twice, two OU entries is the
+            # common case, collapses to the last value in this dict.
+            # For a display summary I accept that loss; a verifier
+            # reading this output should know it happened.
             # get_components() already returns (key, value) byte pairs for
             # every field. The comprehension this replaces indexed back
             # into components()[0] while enumerating it, so it only ever
@@ -122,6 +132,11 @@ def check_expiration(cert_details):
     now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
     time_left = not_after - now
 
+    # timedelta.days floors toward negative infinity, so a cert that
+    # expired an hour ago reads as day minus one and lands in the
+    # expired branch, while one with 23 hours left reads as day zero
+    # and reports expires in 0 days. Both are the floor doing its job;
+    # the wording just gets blunt near the boundary.
     if time_left.days < 0:
         return "Certificate has expired!"
     elif time_left.days < 30:
@@ -138,6 +153,9 @@ def save_to_csv(cert_details, filename):
         filename (str): The name of the CSV file to save to.
     """
     try:
+        # Subject and issuer are dicts, so in the CSV they land as one
+        # stringified cell each, not as columns. The CSV is a record of
+        # the same summary the console prints, not a table to query.
         df = pd.DataFrame([cert_details])
         df.to_csv(filename, index=False)
         logging.info(f"Certificate details saved to {filename}")
