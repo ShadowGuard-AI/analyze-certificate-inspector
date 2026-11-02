@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360" role="img" aria-label="Rooftop observatory during a long exposure, the plate changed only at long intervals">
+  <!-- Back band: the sky. The comet tail brightens very slowly then dims; two cirrus bands cross at weather pace; the stars hold. -->
+  <rect x="0" y="0" width="1200" height="360" fill="#18224a"/>
+  <g fill="#eef2f8"><circle cx="120" cy="40" r="2"/><circle cx="300" cy="80" r="1.6"/><circle cx="520" cy="34" r="2"/><circle cx="700" cy="90" r="1.6"/><circle cx="880" cy="40" r="2"/><circle cx="180" cy="120" r="1.6"/><circle cx="1020" cy="120" r="1.6"/><circle cx="420" cy="110" r="1.6"/></g>
+  <g stroke="#e6ecf4" stroke-width="3" opacity="0.35">
+    <line x1="60" y1="70" x2="420" y2="58"><animate attributeName="x1" values="60;110;60" dur="48s" repeatCount="indefinite"/><animate attributeName="x2" values="420;470;420" dur="48s" repeatCount="indefinite"/></line>
+    <line x1="700" y1="130" x2="1080" y2="118"><animate attributeName="x1" values="700;650;700" dur="56s" repeatCount="indefinite"/><animate attributeName="x2" values="1080;1030;1080" dur="56s" repeatCount="indefinite"/></line>
+  </g>
+  <g>
+    <polygon points="950,44 950,76 560,120 560,104" fill="#f4b06e" opacity="0.55">
+      <animate attributeName="opacity" values="0.55;0.85;0.85;0.55" keyTimes="0;0.4;0.7;1" dur="48s" repeatCount="indefinite"/>
+    </polygon>
+    <circle cx="950" cy="60" r="17" fill="#f8fafc"/>
+  </g>
+  <!-- Middle band: the exposure. Telescope locked on its tripod; at long intervals the figure changes the plate and stillness resumes. -->
+  <polygon points="330,268 348,268 396,168 378,158" fill="#96743a"/>
+  <g stroke="#463620" stroke-width="8"><line x1="356" y1="266" x2="322" y2="330"/><line x1="356" y1="266" x2="356" y2="332"/><line x1="356" y1="266" x2="392" y2="330"/></g>
+  <rect x="392" y="140" width="46" height="30" fill="#3c2a18"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;26 0;26 0;0 0;0 0" keyTimes="0;0.08;0.2;0.3;1" dur="48s" repeatCount="indefinite"/>
+    <rect x="398" y="146" width="34" height="18" fill="#c1c7d1"/>
+  </g>
+  <ellipse cx="486" cy="196" rx="13" ry="15" fill="#e2c4a4"/>
+  <polygon points="470,212 502,212 508,272 464,272" fill="#1a1c26"/>
+  <line x1="474" y1="222" x2="440" y2="176" stroke="#1a1c26" stroke-width="8"/>
+  <!-- Front band: parapet and town edge. Windows go dark one by one, very slowly. The roof lantern sways a degree and settles. -->
+  <rect x="0" y="272" width="1200" height="14" fill="#34323c"/>
+  <rect x="0" y="286" width="1200" height="74" fill="#0c1022"/>
+  <g fill="#fac46e">
+    <rect x="120" y="308" width="10" height="13"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.3;0.36;1" dur="48s" repeatCount="indefinite"/></rect>
+    <rect x="300" y="322" width="10" height="13"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.55;0.61;1" dur="48s" repeatCount="indefinite"/></rect>
+    <rect x="760" y="312" width="10" height="13"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.78;0.84;1" dur="48s" repeatCount="indefinite"/></rect>
+    <rect x="980" y="326" width="10" height="13"/>
+  </g>
+  <g>
+    <animateTransform attributeName="transform" type="rotate" values="0 1150 286;1 1150 286;0 1150 286" dur="7s" repeatCount="indefinite"/>
+    <rect x="1136" y="238" width="28" height="40" fill="none" stroke="#141418" stroke-width="3"/>
+    <rect x="1142" y="246" width="16" height="24" fill="#fccc74"/>
+  </g>
+</svg>
