@@ -3,164 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Analyze Certificate Inspector: what it is, how it runs, where it stops</title>
-<meta name="description" content="Analyze Certificate Inspector is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.">
+<title>analyze-certificate-inspector: The Comet Tail Panic of 1910</title>
+<meta name="description" content="analyze-certificate-inspector inspects SSL and TLS certificates: subject, issuer, validity dates, version, and serial number, with an expiry check.">
 <style>
-:root {
-  --bg: #d6e0e6; --panel: #e8f0f4; --ink: #122230;
-  --mut: #ffffff;
-  --acc: #c4542c; --acc2: #266e82;
-  --line: #e8f0f4;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font-family: Charter, Georgia, serif; line-height: 1.55; }
-code, pre, .mono { font-family: 'DejaVu Sans Mono', monospace; }
-a { color: var(--acc2); }
-.hero { padding: 3rem 6vw 1rem; }
-.hero img.banner { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; }
-.logo { width: 92px; height: 92px; border-radius: 18px;
-  border: 1px solid var(--line); }
-h1 { font-size: 2.4rem; margin: 0.4em 0 0.1em; }
-h2 { border-bottom: 2px solid var(--acc); padding-bottom: 0.2em;
-  margin-top: 2em; }
-.lede { font-size: 1.15rem; max-width: 62ch; }
-main { padding: 0 6vw 3rem; max-width: 1180px; margin: 0 auto; }
-.grid { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; padding: 1rem 1.2rem; }
-.card.pop { animation: rise 0.7s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; } }
-pre.code { background: #101014; color: #e8e6df; padding: 1rem 1.2rem;
-  border-radius: 12px; overflow-x: auto; font-size: 0.86rem;
-  border-left: 5px solid var(--acc); }
-table { border-collapse: collapse; width: 100%; }
-td, th { border-bottom: 1px solid var(--line); padding: 0.45rem 0.6rem;
-  text-align: left; }
-.shots { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.shots img { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; background: #f4f1e8; }
-footer { padding: 2rem 6vw; border-top: 1px solid var(--line);
-  color: var(--mut); }
-.rail { display: flex; gap: 1.2rem; align-items: flex-start; }
-.rail nav { position: sticky; top: 1rem; min-width: 180px; }
-@media (max-width: 760px) { .rail { flex-direction: column; }
-  .rail nav { position: static; } }
-@media (prefers-reduced-motion: reduce) {
-  .card.pop { animation: none; } * { scroll-behavior: auto; } }
+@font-face{font-family:'Athiti';src:url('fonts/Athiti.ttf') format('truetype');}
+@font-face{font-family:'Alegreya Sans';src:url('fonts/AlegreyaSans.ttf') format('truetype');}
+:root{--alt:#18224a;--apr:#f4b06e;--cir:#f4f6f8;--sil:#c1c7d1;--ink:#232a3d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cir);color:var(--ink);font-family:'Alegreya Sans',sans-serif;line-height:1.65}
+h1,h2,h3{font-family:'Athiti',sans-serif;color:var(--alt)}
+.hero{min-height:100vh;padding:1.4rem 6vw 2.4rem;max-width:1180px;margin:0 auto}
+.hero img{width:100%;height:auto;display:block;margin-top:1rem}
+.logo{width:150px !important}
+nav{display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0}
+.platebtn{display:inline-block;background:linear-gradient(180deg,#eef1f5,#d6dbe2);color:var(--alt);font-family:'Athiti',sans-serif;text-decoration:none;padding:.85rem 1.2rem .65rem;border:2px solid var(--sil);border-top:10px solid #aeb6c0;position:relative;opacity:.92;transition:opacity .2s,border-color .2s}
+.platebtn::before,.platebtn::after{content:'';position:absolute;top:-12px;width:16px;height:10px;background:#dfe4ea;border:1.5px solid var(--sil)}
+.platebtn::before{left:16%}.platebtn::after{right:16%}
+.platebtn:hover{opacity:1}
+.platebtn:active{border-color:#8f97a3;filter:brightness(.94)}
+.platebtn:focus-visible{outline:3px solid var(--apr);outline-offset:3px}
+main{padding:0 6vw 3rem;max-width:1180px;margin:0 auto}
+.leaf{background:var(--alt);color:var(--cir);padding:1.3rem 1.6rem;margin:1.8rem 0;position:relative;border:2px solid var(--sil);overflow:hidden}
+.leaf::before{content:'';position:absolute;top:-16px;left:-30px;width:130%;height:26px;background:linear-gradient(90deg,transparent,var(--apr),transparent);transform:rotate(var(--arc,-2deg));opacity:.75}
+.leaf h2,.leaf h3{color:var(--cir)}
+.leaf code,.leaf pre{color:#fff}
+pre{background:rgba(255,255,255,.12);padding:1rem;overflow-x:auto}
+a{color:var(--alt)}
+a::before{content:'\2726';color:#9aa3b1;margin-right:.4rem;transition:color .15s}
+a:hover::before{color:var(--alt)}
+.platebtn::before{content:''}
+.leaf a{color:var(--apr)}
+.env{background:var(--cir);color:var(--alt);border:2px solid var(--sil);padding:1rem 1.2rem;margin:1rem 0;position:relative}
+.env::before{content:'';position:absolute;top:0;left:0;right:0;height:14px;background:linear-gradient(90deg,#dfe4ea,#eef1f5);border-bottom:1.5px solid var(--sil)}
+.env h3{margin-top:1rem}
+.cometmark{color:var(--apr);font-size:1.1rem}
+.tail{height:16px;margin:2rem 0;background:radial-gradient(ellipse 90% 100% at 8% 50%,var(--apr),transparent 70%);border-radius:50%}
+.tail.short{width:34%;margin:1.4rem auto}
+table{border-collapse:collapse;width:100%}
+td,th{border-bottom:1px solid var(--sil);padding:.45rem .6rem;text-align:left;vertical-align:top}
+footer{padding:1rem 6vw 2.6rem;max-width:1180px;margin:0 auto}
 </style>
 </head>
-<body class="layout-grid">
-<!-- This page exists for analyze-certificate-inspector alone: the layout (console-grid),
-     the colors, and the type were picked for this project, not
-     shared with the other project pages. The code block below is
-     copied from the file it names, line for line. If it looks
-     plain, that is because the project is plain, and I would
-     rather the page match the project than dress it up. The one
-     thing I will not do here is oversell: what this project does
-     not do is stated on the page, not hidden from it. -->
+<body>
 <header class="hero">
-  <img class="logo" src="assets/logo.png" alt="Analyze Certificate Inspector logo">
-  <img class="banner" src="assets/banner.png" alt="">
-  <h1>Analyze Certificate Inspector</h1>
-  <p class="mono"><a href="https://github.com/ShadowGuard-AI/analyze-certificate-inspector">github.com/ShadowGuard-AI/analyze-certificate-inspector</a></p>
+<img class="logo" src="assets/logo.png" alt="Glass comet photograph plate in a silver holder, comet burned into the emulsion">
+<h1>analyze-certificate-inspector</h1>
+<p>An observatory plate ledger from a May night in 1910: wonder held steady by method, a bright distant thing read field by field.</p>
+<nav aria-label="Ledger leaves">
+<a class="platebtn" href="#records">Expose the Plate</a>
+<a class="platebtn" href="#roof">Getting to the Roof</a>
+<a class="platebtn" href="#exposure">Making the Exposure</a>
+<a class="platebtn" href="#envelope">The Envelope</a>
+</nav>
+<img src="assets/intro-banner.png" alt="Rooftop observatory during a long exposure, comet above the sleeping town, nothing readable anywhere">
+<img src="assets/banner.png" alt="Rooftop observatory with analyze-certificate-inspector painted on the wall sign above the door">
 </header>
-
 <main>
-  <section class="rail">
-    <nav aria-label="on this page">
-      <p class="mono"><a href="#run">Run it</a><br>
-      <a href="#files">The files</a><br>
-      <a href="#sheets">The sheets</a><br>
-      <a href="https://github.com/ShadowGuard-AI/analyze-certificate-inspector">The repo</a></p>
-    </nav>
-    <div>
-      <p class="lede">Analyze Certificate Inspector is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.</p>
-      <div class="grid">
-        <div class="card pop"><h3>What it is</h3>
-          <p>Analyze Certificate Inspector: 5 files, 210 counted
-          lines across Python 189, Markdown 19, Text 2. One job, done in the
-          open, in files you can read.</p></div>
-        <div class="card pop"><h3>The biggest piece</h3>
-          <p><code>main.py</code> carries the most
-          lines. If the project grows, that file is where the growth
-          lands first, for better or worse.</p></div>
-        <div class="card pop"><h3>The honest gap</h3>
-          <p>No test files yet. That is the honest gap, and the roadmap in the visuals folder says what the first one should cover.</p></div>
-      </div>
-      <section id="run">
-        <h2>Run it</h2>
-        <p>The repo README has the exact commands for this one. The
-        shape is the shape for most of my projects: clone it, read the
-        top file first so you know what will happen, then run it on
-        something you do not mind breaking.</p>
-        <p class="mono">$ git clone https://github.com/ShadowGuard-AI/analyze-certificate-inspector.git<br>$ cd analyze-certificate-inspector</p>
-      </section>
-      
-  <section aria-label="real code">
-    <h2>The code, as it sits in the repo</h2>
-    <p>From <code>main.py</code>, line 11 on. I did
-    not tidy it for the page. What you see is what the file has.</p>
-    <pre class="code"><code>logging.basicConfig(level=logging.INFO, format=&#x27;%(asctime)s - %(levelname)s - %(message)s&#x27;)
-
-def setup_argparse():
-    &quot;&quot;&quot;
-    Sets up the argument parser for the command-line interface.
-
-    Returns:
-        argparse.ArgumentParser: The configured argument parser.
-    &quot;&quot;&quot;
-    parser = argparse.ArgumentParser(description=&#x27;Inspects SSL/TLS certificates for expiration, issuer, and vulnerabilities.&#x27;)
-    parser.add_argument(&#x27;hostname&#x27;, help=&#x27;The hostname to inspect.&#x27;)
-    parser.add_argument(&#x27;-p&#x27;, &#x27;--port&#x27;, type=int, default=443, help=&#x27;The port to connect to (default: 443).&#x27;)
-    parser.add_argument(&#x27;-v&#x27;, &#x27;--verbose&#x27;, action=&#x27;store_true&#x27;, help=&#x27;Enable verbose logging.&#x27;)
-    parser.add_argument(&#x27;-o&#x27;, &#x27;--output&#x27;, help=&#x27;Output the certificate details to a CSV file.&#x27;)
-    return parser
-
-def get_certificate(hostname, port=443):
-    &quot;&quot;&quot;
-    Retrieves the SSL/TLS certificate from the specified hostname and port.
-
-    Args:
-        hostname (str): The hostname to connect to.</code></pre>
-  </section>
-      <section id="files">
-        <h2>The files that matter</h2>
-        <table><tr><th>File</th><th>Lines</th></tr>
-        <tr><td><code>main.py</code></td><td>189</td></tr>
-        <tr><td><code>README.md</code></td><td>19</td></tr>
-        <tr><td><code>requirements.txt</code></td><td>2</td></tr>
-        <tr><td><code>banner.png</code></td><td>0</td></tr>
-        <tr><td><code>logo.png</code></td><td>0</td></tr>
-        </table>
-        <p>Names doing the work: <span class="mono">setup_argparse, get_certificate, analyze_certificate, check_expiration, save_to_csv, main, name_to_dict</span>.</p>
-      </section>
-      <section id="sheets">
-        <h2>Drawn by hand</h2>
-        <p>I sketch my projects on notebook paper so I have to
-        understand them well enough to draw them. The full set,
-        with the counts and how they were counted, is the
-        <a href="https://github.com/ShadowGuard-AI/analyze-certificate-inspector/tree/main/analyze-certificate-inspector-Visuals">analyze-certificate-inspector-Visuals</a>
-        folder in the repo. Nothing is drawn over the binder holes.
-        That is a rule, not a style.</p>
-        <div class="shots">
-          <img src="assets/architecture.png" alt="Hand drawn architecture sheet for Analyze Certificate Inspector">
-          <img src="assets/flowchart.png" alt="Hand drawn flowchart sheet for Analyze Certificate Inspector">
-          <img src="assets/product-map.png" alt="Hand drawn product map sheet for Analyze Certificate Inspector">
-        </div>
-      </section>
-    </div>
-  </section>
+<div class="tail"></div>
+<section class="leaf" id="records" style="--arc:-2deg">
+<h2>First Leaf: What the Plate Records</h2>
+<p>analyze-certificate-inspector inspects SSL and TLS certificates. The leaf lists the exact fields the README lists, in its order:</p>
+<ul>
+<li>subject</li>
+<li>issuer</li>
+<li>validity dates</li>
+<li>version</li>
+<li>serial number</li>
+</ul>
+<h3>Has Its Time Run Out</h3>
+<p>The tool checks whether the certificate has expired or is close to expiring. The dates matter because a certificate whose time has run out is the one finding on the plate that carries a consequence.</p>
+<p>The project is focused on data analysis and reporting, and this leaf says that too, without adding fields, checks, or host behaviour the source never mentions.</p>
+</section>
+<div class="tail short"></div>
+<section class="leaf" id="roof" style="--arc:1.5deg">
+<h2>Second Leaf: Getting to the Roof</h2>
+<p>Installation is the one clone command the README supplies, reproduced character for character:</p>
+<pre>git clone https://github.com/ShadowGuardAI/analyze-certificate-inspector</pre>
+<p><a href="#exposure">Expose the Plate</a> and read the exposure leaf next.</p>
+</section>
+<div class="tail"></div>
+<section class="leaf" id="exposure" style="--arc:-1deg">
+<h2>Third Leaf: Making the Exposure</h2>
+<pre>./analyze-certificate-inspector [params]</pre>
+<table>
+<tr><th>Parameter</th><th>Recorded duty</th></tr>
+<tr><td><code>-h</code></td><td>Show help message and exit</td></tr>
+<tr><td><code>-v</code></td><td>Enable verbose logging</td></tr>
+<tr><td><code>-o</code></td><td>Output the certificate details to a CSV file. <span class="cometmark">&#9732;</span> File It as CSV</td></tr>
+<tr><td><code>-p</code></td><td>No description provided</td></tr>
+</table>
+<div class="env"><h3>No Description on the Envelope</h3><p>The flag <code>-p</code> stands with the source's own words beside it, no description provided, because an invented duty for that flag would be worse than the blank.</p></div>
+<div class="env"><h3>Has Its Time Run Out</h3><p>The expiry warning is the one judgement in this ledger that carries a date with consequences: the tool checks whether the certificate has expired or is close to expiring.</p></div>
+</section>
+<div class="tail short"></div>
+<section class="leaf" id="envelope" style="--arc:2deg">
+<h2>Fourth Leaf: The Envelope</h2>
+<p>The license line closes the ledger, exactly as the README records it:</p>
+<p>Copyright (c) ShadowGuardAI</p>
+<p>The ledger ends there, offering no sample output, no example host, and no test results, since the source offers none.</p>
+</section>
 </main>
-<footer>
-  <p>Analyze Certificate Inspector is one of my projects. This page was written
-  from the repo itself on 2026-10-30: the counts are the
-  repo's counts, the code is the repo's code, and the gaps are the
-  repo's gaps.</p>
-</footer>
+<footer><p>analyze-certificate-inspector, filed plate by plate: fixed attention, a recorded list of fields, and a date judgement.</p></footer>
 </body>
 </html>
