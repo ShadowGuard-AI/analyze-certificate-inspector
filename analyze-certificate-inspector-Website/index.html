@@ -3,106 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>analyze-certificate-inspector: The Comet Tail Panic of 1910</title>
-<meta name="description" content="analyze-certificate-inspector inspects SSL and TLS certificates: subject, issuer, validity dates, version, and serial number, with an expiry check.">
+<title>analyze-certificate-inspector: The Notary Desk</title>
+<meta name="description" content="Inspects SSL and TLS certificates: subject, issuer, validity dates, version, and serial number, with an expiry or near-expiry check.">
 <style>
-@font-face{font-family:'Athiti';src:url('fonts/Athiti.ttf') format('truetype');}
-@font-face{font-family:'Alegreya Sans';src:url('fonts/AlegreyaSans.ttf') format('truetype');}
-:root{--alt:#18224a;--apr:#f4b06e;--cir:#f4f6f8;--sil:#c1c7d1;--ink:#232a3d}
-*{box-sizing:border-box}
-body{margin:0;background:var(--cir);color:var(--ink);font-family:'Alegreya Sans',sans-serif;line-height:1.65}
-h1,h2,h3{font-family:'Athiti',sans-serif;color:var(--alt)}
-.hero{min-height:100vh;padding:1.4rem 6vw 2.4rem;max-width:1180px;margin:0 auto}
-.hero img{width:100%;height:auto;display:block;margin-top:1rem}
-.logo{width:150px !important}
-nav{display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0}
-.platebtn{display:inline-block;background:linear-gradient(180deg,#eef1f5,#d6dbe2);color:var(--alt);font-family:'Athiti',sans-serif;text-decoration:none;padding:.85rem 1.2rem .65rem;border:2px solid var(--sil);border-top:10px solid #aeb6c0;position:relative;opacity:.92;transition:opacity .2s,border-color .2s}
-.platebtn::before,.platebtn::after{content:'';position:absolute;top:-12px;width:16px;height:10px;background:#dfe4ea;border:1.5px solid var(--sil)}
-.platebtn::before{left:16%}.platebtn::after{right:16%}
-.platebtn:hover{opacity:1}
-.platebtn:active{border-color:#8f97a3;filter:brightness(.94)}
-.platebtn:focus-visible{outline:3px solid var(--apr);outline-offset:3px}
-main{padding:0 6vw 3rem;max-width:1180px;margin:0 auto}
-.leaf{background:var(--alt);color:var(--cir);padding:1.3rem 1.6rem;margin:1.8rem 0;position:relative;border:2px solid var(--sil);overflow:hidden}
-.leaf::before{content:'';position:absolute;top:-16px;left:-30px;width:130%;height:26px;background:linear-gradient(90deg,transparent,var(--apr),transparent);transform:rotate(var(--arc,-2deg));opacity:.75}
-.leaf h2,.leaf h3{color:var(--cir)}
-.leaf code,.leaf pre{color:#fff}
-pre{background:rgba(255,255,255,.12);padding:1rem;overflow-x:auto}
-a{color:var(--alt)}
-a::before{content:'\2726';color:#9aa3b1;margin-right:.4rem;transition:color .15s}
-a:hover::before{color:var(--alt)}
-.platebtn::before{content:''}
-.leaf a{color:var(--apr)}
-.env{background:var(--cir);color:var(--alt);border:2px solid var(--sil);padding:1rem 1.2rem;margin:1rem 0;position:relative}
-.env::before{content:'';position:absolute;top:0;left:0;right:0;height:14px;background:linear-gradient(90deg,#dfe4ea,#eef1f5);border-bottom:1.5px solid var(--sil)}
-.env h3{margin-top:1rem}
-.cometmark{color:var(--apr);font-size:1.1rem}
-.tail{height:16px;margin:2rem 0;background:radial-gradient(ellipse 90% 100% at 8% 50%,var(--apr),transparent 70%);border-radius:50%}
-.tail.short{width:34%;margin:1.4rem auto}
-table{border-collapse:collapse;width:100%}
-td,th{border-bottom:1px solid var(--sil);padding:.45rem .6rem;text-align:left;vertical-align:top}
-footer{padding:1rem 6vw 2.6rem;max-width:1180px;margin:0 auto}
+@font-face{font-family:'El Messiri';src:url('fonts/ElMessiri-400.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'El Messiri';src:url('fonts/ElMessiri-600.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'El Messiri';src:url('fonts/ElMessiri-700.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Hanken Grotesk';src:url('fonts/HankenGrotesk-400.woff2') format('woff2');font-weight:400}
+@font-face{font-family:'Hanken Grotesk';src:url('fonts/HankenGrotesk-500.woff2') format('woff2');font-weight:500}
+@font-face{font-family:'Hanken Grotesk';src:url('fonts/HankenGrotesk-600.woff2') format('woff2');font-weight:600}
+@font-face{font-family:'Hanken Grotesk';src:url('fonts/HankenGrotesk-700.woff2') format('woff2');font-weight:700}
+:root{--ground:#ece5d3;--ink:#2c2318;--paper:#faf6ea;--line:#ddd2b8;--frame:#f6f1e3;--accent:#a41f2d;--accentdk:#7e1622;--accentlt:#e8b26a;--herotitle:#faf3df;--herotext:#eee3cb;--cardtitle:#4a2c17;--stripbg:#3a2413;--striptext:#f6efdd;--footink:#8a7a5c;--headfont:'El Messiri';--bodyfont:'Hanken Grotesk'}
+*{box-sizing:border-box} body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--bodyfont),sans-serif;line-height:1.65}
+h1,h2{font-family:var(--headfont),sans-serif}
+.hero{background:linear-gradient(170deg,#6d452a 0%,#5a3421 55%,#3a2413 100%);padding:2.2rem 6vw 1.8rem;border-bottom:8px solid var(--accent)}
+.hero .inner{max-width:1020px;margin:0 auto}
+.hero img.wide{width:100%;height:auto;display:block;border:5px solid var(--frame);border-radius:4px;box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.hero .row{display:flex;gap:1.1rem;align-items:flex-start;margin-top:1.2rem}
+.hero .row img{width:92px;height:92px;object-fit:cover;border-radius:6px;border:3px solid var(--frame);background:var(--frame)}
+.hero h1{margin:.1rem 0 .3rem;font-size:2.4rem;color:var(--herotitle)}
+.hero p{max-width:44rem;color:var(--herotext)}
+.hero a{color:var(--accentlt)}
+main{padding:0 6vw 3rem;max-width:1020px;margin:0 auto}
+.card{background:var(--paper);border:1px solid var(--line);border-top:8px solid #b98a2f;padding:1.2rem 1.5rem;margin:1.6rem 0;box-shadow:0 2px 8px rgba(30,30,30,.14)}
+.card.accent{border-top-color:var(--accent)}
+.card h2{margin:.1rem 0 .5rem;font-size:1.6rem;color:var(--cardtitle)}
+.card p{margin:.4rem 0}
+.strip{background:var(--stripbg);color:var(--striptext);padding:1rem 1.2rem;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:.92rem;border-radius:4px;border-left:6px solid var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-family:var(--bodyfont),sans-serif;font-weight:700;text-decoration:none;padding:.55rem 1.1rem;border-radius:3px;margin:.3rem .4rem .3rem 0}
+.btn:hover{background:var(--frame);color:var(--accentdk)}.btn:active{transform:translateY(2px)}
+.btn:focus-visible{outline:2px dashed var(--accent);outline-offset:3px}
+a{color:var(--accentdk);font-weight:700}
+table{border-collapse:collapse}td{padding:.2rem .9rem .2rem 0;vertical-align:top}
+td:first-child{font-weight:700;color:var(--cardtitle);white-space:nowrap}
+ul{margin:.4rem 0;padding-left:1.2rem}li{margin:.25rem 0}
+.small{font-size:.92rem}
+footer{padding:0 6vw 2.5rem;max-width:1020px;margin:0 auto;color:var(--footink)}
 </style>
 </head>
 <body>
 <header class="hero">
-<img class="logo" src="assets/logo.png" alt="Glass comet photograph plate in a silver holder, comet burned into the emulsion">
-<h1>analyze-certificate-inspector</h1>
-<p>An observatory plate ledger from a May night in 1910: wonder held steady by method, a bright distant thing read field by field.</p>
-<nav aria-label="Ledger leaves">
-<a class="platebtn" href="#records">Expose the Plate</a>
-<a class="platebtn" href="#roof">Getting to the Roof</a>
-<a class="platebtn" href="#exposure">Making the Exposure</a>
-<a class="platebtn" href="#envelope">The Envelope</a>
-</nav>
-<img src="assets/intro-banner.png" alt="Rooftop observatory during a long exposure, comet above the sleeping town, nothing readable anywhere">
-<img src="assets/banner.png" alt="Rooftop observatory with analyze-certificate-inspector painted on the wall sign above the door">
+<div class="inner">
+<img class="wide" src="assets/intro-banner.png" alt="A gold seal stamp with a wooden handle pressed down onto a cream certificate close up, a finger holding the page flat at its edge and a red ribbon curling through two punched holes beside the stamp">
+<div class="row"><img src="assets/logo.png" alt="analyze-certificate-inspector logo: a blank cream certificate with an embossed circular border photographed from above on a mahogany desk, a heavy gold seal stamp resting on its lower right corner, a red ribbon tied in a bow through a punched hole at its foot, and a black pen and brass inkwell at the desk edge above"><div><h1>analyze-certificate-inspector</h1><p>Inspects SSL and TLS certificates and shows their subject, issuer, validity dates, version, and serial number, with a check on whether the certificate has expired or is close to expiring.</p><p><a class="btn" href="https://github.com/ShadowGuard-AI/analyze-certificate-inspector">Open the repo</a> <a class="btn" href="#usage">Usage</a></p></div></div>
+</div>
 </header>
 <main>
-<div class="tail"></div>
-<section class="leaf" id="records" style="--arc:-2deg">
-<h2>First Leaf: What the Plate Records</h2>
-<p>analyze-certificate-inspector inspects SSL and TLS certificates. The leaf lists the exact fields the README lists, in its order:</p>
-<ul>
-<li>subject</li>
-<li>issuer</li>
-<li>validity dates</li>
-<li>version</li>
-<li>serial number</li>
-</ul>
-<h3>Has Its Time Run Out</h3>
-<p>The tool checks whether the certificate has expired or is close to expiring. The dates matter because a certificate whose time has run out is the one finding on the plate that carries a consequence.</p>
-<p>The project is focused on data analysis and reporting, and this leaf says that too, without adding fields, checks, or host behaviour the source never mentions.</p>
-</section>
-<div class="tail short"></div>
-<section class="leaf" id="roof" style="--arc:1.5deg">
-<h2>Second Leaf: Getting to the Roof</h2>
-<p>Installation is the one clone command the README supplies, reproduced character for character:</p>
-<pre>git clone https://github.com/ShadowGuardAI/analyze-certificate-inspector</pre>
-<p><a href="#exposure">Expose the Plate</a> and read the exposure leaf next.</p>
-</section>
-<div class="tail"></div>
-<section class="leaf" id="exposure" style="--arc:-1deg">
-<h2>Third Leaf: Making the Exposure</h2>
-<pre>./analyze-certificate-inspector [params]</pre>
-<table>
-<tr><th>Parameter</th><th>Recorded duty</th></tr>
-<tr><td><code>-h</code></td><td>Show help message and exit</td></tr>
-<tr><td><code>-v</code></td><td>Enable verbose logging</td></tr>
-<tr><td><code>-o</code></td><td>Output the certificate details to a CSV file. <span class="cometmark">&#9732;</span> File It as CSV</td></tr>
-<tr><td><code>-p</code></td><td>No description provided</td></tr>
-</table>
-<div class="env"><h3>No Description on the Envelope</h3><p>The flag <code>-p</code> stands with the source's own words beside it, no description provided, because an invented duty for that flag would be worse than the blank.</p></div>
-<div class="env"><h3>Has Its Time Run Out</h3><p>The expiry warning is the one judgement in this ledger that carries a date with consequences: the tool checks whether the certificate has expired or is close to expiring.</p></div>
-</section>
-<div class="tail short"></div>
-<section class="leaf" id="envelope" style="--arc:2deg">
-<h2>Fourth Leaf: The Envelope</h2>
-<p>The license line closes the ledger, exactly as the README records it:</p>
-<p>Copyright (c) ShadowGuardAI</p>
-<p>The ledger ends there, offering no sample output, no example host, and no test results, since the source offers none.</p>
-</section>
+<section class="card accent"><h2>What it reads</h2><ul>
+<li>Subject and issuer</li>
+<li>Validity dates</li>
+<li>Version and serial number</li>
+<li>Whether the certificate has expired, or is close to expiring: the one judgement in the tool that carries a date with consequences</li>
+</ul></section>
+<section class="card" id="usage"><h2>Install and usage</h2><div class="strip">cd analyze-certificate-inspector<br>pip install -r requirements.txt<br><br>./analyze-certificate-inspector [params]</div><p class="small">Dependencies are in <code>requirements.txt</code>: pandas and pyOpenSSL.</p></section>
+<section class="card"><h2>Parameters</h2><table>
+<tr><td><code>-h</code></td><td>show help message and exit</td></tr>
+<tr><td><code>-p</code></td><td>no description provided in the source; the blank is left showing rather than filled with an invented duty</td></tr>
+<tr><td><code>-v</code></td><td>enable verbose logging</td></tr>
+<tr><td><code>-o</code></td><td>output the certificate details to a CSV file</td></tr>
+</table></section>
+<section class="card accent"><h2>The files</h2><p class="small"><code>main.py</code>, the inspector itself. <code>requirements.txt</code>, its dependencies. <code>LICENSE</code>, the MIT License. Full notes are in the <a href="https://github.com/ShadowGuard-AI/analyze-certificate-inspector">repo README</a>.</p></section>
 </main>
-<footer><p>analyze-certificate-inspector, filed plate by plate: fixed attention, a recorded list of fields, and a date judgement.</p></footer>
+<footer><p>The document itself, read against its dates.</p></footer>
 </body>
 </html>

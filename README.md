@@ -1,11 +1,11 @@
-![Rooftop observatory during a long exposure, comet above the sleeping town, scenery only](intro-banner.png)
+![Intro scenery: a gold seal stamp with a wooden handle pressed down onto a cream certificate close up, a finger holding the page flat at its edge and a red ribbon curling through two punched holes beside the stamp](intro-banner.png)
 
 
 # analyze-certificate-inspector
 
-![analyze-certificate-inspector painted in Athiti on the observatory wall sign above the door](banner.png)
+![Wordmark banner: a mahogany notary desk with one cream certificate laid flat at its centre under a brass lamp, a gold seal stamp lying on its side and a red ribbon beside it, a standing calendar card to the left and a ranked row of bound registers behind the desk](banner.png)
 
-![The comet photograph plate in its silver holder, drawn once as the header plate](logo.png)
+![analyze-certificate-inspector logo: a blank cream certificate with an embossed circular border photographed from above on a mahogany desk, a heavy gold seal stamp resting on its lower right corner, a red ribbon tied in a bow through a punched hole at its foot, and a black pen and brass inkwell at the desk edge above](logo.png)
 
 ![Animated rooftop during an exposure: the tail brightens slowly and the plate is changed at long intervals](scene.svg)
 Inspects SSL/TLS certificates and shows their subject, issuer, validity dates, version, and serial number, with a check on whether the certificate has expired or is close to expiring. - Focused on Data analysis and reporting
